@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>東家娛樂城 - 妞妞遊戲大廳</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* 如果有背景圖片，取消註解下面這段 */
+        /*
+        body {
+            background-image: url('登入畫面背景.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        */
+        
+        .bg-overlay {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+        }
+        
+        .game-room {
+            transition: all 0.3s ease;
+            min-height: 200px;
+        }
+        
+        .game-room:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-badge {
+            background: linear-gradient(145deg, #F59E0B 0%, #D97706 50%, #92400E 100%);
+            border: 3px solid #FBBF24;
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.3),
+                0 0 0 2px #D97706;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-badge:before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 40%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), transparent);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+        
+        .btn-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                inset 0 2px 4px rgba(255, 255, 255, 0.4),
+                0 6px 12px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(251, 191, 36, 0.6);
+        }
+        
+        .btn-record {
+            background: linear-gradient(145deg, #F59E0B 0%, #D97706 100%);
+            border-radius: 15px;
+            border: 4px solid #FBBF24;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-record:before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FBBF24, #F59E0B, #D97706, #FBBF24);
+            z-index: -1;
+            border-radius: 18px;
+        }
+        
+        .floating-coins {
+            animation: floatCoins 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatCoins {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .card-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .game-room:hover {
+                transform: none;
+            }
+            
+            .floating-coins {
+                animation: none;
+            }
+            
+            .card-shine::after {
+                display: none;
+            }
+        }
+        
+        /* 手機版隱藏財神爺 */
+        @media (max-width: 1024px) {
+            .desktop-god {
+                display: none;
+            }
+        }
+        
+        /* 觸控設備優化 */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-badge:hover,
+            .game-room:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex flex-col">
+        
+        <!-- 背景遮罩 -->
+        <div class="fixed inset-0 bg-overlay -z-10"></div>
+        
+        <!-- 頂部狀態欄 -->
+        <div class="flex flex-col sm:flex-row justify-between items-center p-2 sm:p-4 bg-gradient-to-r from-yellow-600 to-orange-600 shadow-lg relative z-20 gap-2 sm:gap-0">
+            
+            <!-- 左側：玩家資訊 -->
+            <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                <!-- 玩家資訊 -->
+                <div class="btn-badge rounded-lg p-2 sm:p-3 shadow-lg w-full sm:w-auto">
+                    <div class="bg-white rounded p-2 flex items-center justify-center min-h-[3rem]">
+                        <div class="text-xs text-gray-700 text-center leading-tight">
+                            <div class="font-bold">玩家名稱</div>
+                            <div>玩家編號</div>
+                            <div class="text-orange-600 font-bold text-xs">代理推薦碼</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 餘額顯示 -->
+                <div class="btn-badge rounded-lg p-2 sm:p-4 shadow-lg flex items-center justify-center space-x-3 w-full sm:w-auto">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-800" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-yellow-100 text-xs sm:text-sm font-bold">餘額顯示</div>
+                        <div class="text-white font-bold text-sm sm:text-lg">$1,234,567</div>
+                    </div>
+                    <div class="floating-coins text-xl sm:text-2xl flex-shrink-0">💰</div>
+                </div>
+            </div>
+
+            <!-- 右側：功能按鈕 -->
+            <div class="flex space-x-2 sm:space-x-4 w-full sm:w-auto justify-center">
+                <button class="btn-badge rounded-full p-2 sm:p-4 shadow-lg flex-1 sm:flex-none">
+                    <div class="w-10 h-10 sm:w-14 sm:h-14 flex flex-col items-center justify-center text-white">
+                        <svg class="w-5 h-5 sm:w-7 sm:h-7 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span class="text-xs font-bold">客服</span>
+                    </div>
+                </button>
+                
+                <button class="btn-badge rounded-full p-2 sm:p-4 shadow-lg flex-1 sm:flex-none">
+                    <div class="w-10 h-10 sm:w-14 sm:h-14 flex flex-col items-center justify-center text-white">
+                        <svg class="w-5 h-5 sm:w-7 sm:h-7 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        <span class="text-xs font-bold">公告</span>
+                    </div>
+                </button>
+                
+                <button class="btn-badge rounded-full p-2 sm:p-4 shadow-lg flex-1 sm:flex-none">
+                    <div class="w-10 h-10 sm:w-14 sm:h-14 flex flex-col items-center justify-center text-white">
+                        <svg class="w-5 h-5 sm:w-7 sm:h-7 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                        </svg>
+                        <span class="text-xs font-bold">設定</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 主要遊戲區域 -->
+        <div class="flex-1 flex relative">
+            
+            <!-- 左側財神爺裝飾 - 只在桌面版顯示 -->
+            <div class="desktop-god absolute left-4 bottom-16 z-10 hidden lg:block">
+                <div class="w-48 xl:w-64 h-60 xl:h-80">
+                    <!-- 財神爺圖片 -->
+                    <img 
+                        src="財神爺.png" 
+                        alt="財神爺" 
+                        class="w-full h-full object-contain drop-shadow-2xl"
+                        style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    />
+                    
+                    <!-- 備用顯示（當圖片載入失敗時） -->
+                    <div class="w-full h-full bg-gradient-to-b from-yellow-400 to-orange-600 rounded-2xl flex items-center justify-center shadow-2xl" style="display: none;">
+                        <div class="text-center text-white">
+                            <div class="text-2xl xl:text-4xl mb-2">🎯</div>
+                            <div class="font-bold text-sm xl:text-base">財神護佑</div>
+                            <div class="text-xs xl:text-sm">好運連連</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 遊戲房間區域 -->
+            <div class="flex-1 p-3 sm:p-6 lg:ml-56 xl:ml-72 relative z-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6 h-full max-w-7xl mx-auto">
+                    
+                    <!-- 百人妞妞房間 1 -->
+                    <div class="game-room bg-gradient-to-b from-green-600 to-green-800 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-yellow-500 shadow-xl sm:shadow-2xl cursor-pointer card-shine glow-effect">
+                        <div class="p-3 sm:p-6 h-full flex flex-col relative">
+                            <!-- 房間標題 -->
+                            <div class="text-center mb-2 sm:mb-4">
+                                <h3 class="text-lg sm:text-2xl font-bold text-yellow-300 mb-1 sm:mb-2">百人妞妞</h3>
+                                <div class="flex justify-center space-x-1 sm:space-x-2">
+                                    <!-- 撲克牌 -->
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">A</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-red-500">♦</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">A</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">♠</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 房間資訊 -->
+                            <div class="flex-1 text-center text-yellow-200 flex flex-col justify-center">
+                                <p class="mb-1 sm:mb-2 text-sm sm:text-base">👥 人數對戰・公平刺激</p>
+                                <p class="text-xs sm:text-sm">隨時開局！</p>
+                            </div>
+                            
+                            <!-- 裝飾邊框 -->
+                            <div class="absolute inset-1 sm:inset-2 border border-yellow-400 sm:border-2 rounded-lg sm:rounded-xl pointer-events-none opacity-50"></div>
+                        </div>
+                    </div>
+
+                    <!-- 百人妞妞房間 2 -->
+                    <div class="game-room bg-gradient-to-b from-green-600 to-green-800 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-yellow-500 shadow-xl sm:shadow-2xl cursor-pointer card-shine glow-effect">
+                        <div class="p-3 sm:p-6 h-full flex flex-col relative">
+                            <!-- 房間標題 -->
+                            <div class="text-center mb-2 sm:mb-4">
+                                <h3 class="text-lg sm:text-2xl font-bold text-yellow-300 mb-1 sm:mb-2">百人妞妞</h3>
+                                <div class="flex justify-center space-x-1 sm:space-x-2">
+                                    <!-- 撲克牌 -->
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">A</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-red-500">♥</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">A</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">♣</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 房間資訊 -->
+                            <div class="flex-1 text-center text-yellow-200 flex flex-col justify-center">
+                                <p class="mb-1 sm:mb-2 text-sm sm:text-base">🎯 真人對戰・公平刺激</p>
+                                <p class="text-xs sm:text-sm">隨時開局！</p>
+                            </div>
+                            
+                            <!-- 裝飾邊框 -->
+                            <div class="absolute inset-1 sm:inset-2 border border-yellow-400 sm:border-2 rounded-lg sm:rounded-xl pointer-events-none opacity-50"></div>
+                        </div>
+                    </div>
+
+                    <!-- 百人妞妞房間 3 -->
+                    <div class="game-room bg-gradient-to-b from-green-600 to-green-800 rounded-xl sm:rounded-2xl border-2 sm:border-4 border-yellow-500 shadow-xl sm:shadow-2xl cursor-pointer card-shine glow-effect sm:col-span-2 xl:col-span-1">
+                        <div class="p-3 sm:p-6 h-full flex flex-col relative">
+                            <!-- 房間標題 -->
+                            <div class="text-center mb-2 sm:mb-4">
+                                <h3 class="text-lg sm:text-2xl font-bold text-yellow-300 mb-1 sm:mb-2">百人妞妞</h3>
+                                <div class="flex justify-center space-x-1 sm:space-x-2">
+                                    <!-- 撲克牌 -->
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">K</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-red-500">♦</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">Q</span>
+                                    </div>
+                                    <div class="w-6 h-9 sm:w-8 sm:h-12 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                        <span class="text-sm sm:text-lg font-bold text-black">♠</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 房間資訊 -->
+                            <div class="flex-1 text-center text-yellow-200 flex flex-col justify-center">
+                                <p class="mb-1 sm:mb-2 text-sm sm:text-base">⚡ 極速對戰・公平刺激</p>
+                                <p class="text-xs sm:text-sm">隨時開局！</p>
+                            </div>
+                            
+                            <!-- 裝飾邊框 -->
+                            <div class="absolute inset-1 sm:inset-2 border border-yellow-400 sm:border-2 rounded-lg sm:rounded-xl pointer-events-none opacity-50"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部功能列 -->
+        <div class="bg-gradient-to-r from-yellow-600 to-orange-600 p-2 sm:p-4 shadow-lg relative z-20">
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4 lg:space-x-8 max-w-4xl mx-auto">
+                
+                <!-- 戰績按鈕 -->
+                <button class="cursor-pointer transition-transform hover:scale-105 active:scale-95 w-full sm:w-auto">
+                    <img 
+                        src="戰績.png" 
+                        alt="戰績" 
+                        class="w-full h-auto sm:w-32 sm:h-16 object-contain"
+                    />
+                </button>
+
+                <!-- 排行榜按鈕 -->
+                <button class="cursor-pointer transition-transform hover:scale-105 active:scale-95 w-full sm:w-auto">
+                    <img 
+                        src="排行榜按鈕圖式.png" 
+                        alt="排行榜" 
+                        class="w-full h-auto sm:w-32 sm:h-16 object-contain"
+                    />
+                </button>
+
+                <!-- 活動按鈕 -->
+                <button class="cursor-pointer transition-transform hover:scale-105 active:scale-95 w-full sm:w-auto">
+                    <img 
+                        src="活動按鈕圖示.png" 
+                        alt="活動" 
+                        class="w-full h-auto sm:w-32 sm:h-16 object-contain"
+                    />
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('遊戲大廳載入完成');
+            
+            // 偵測設備類型
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+            
+            // 遊戲房間點擊事件
+            const gameRooms = document.querySelectorAll('.game-room');
+            
+            gameRooms.forEach((room, index) => {
+                room.addEventListener('click', function() {
+                    const roomNumber = index + 1;
+                    alert(`進入百人妞妞房間 ${roomNumber}\n準備開始遊戲！`);
+                    console.log(`進入房間 ${roomNumber}`);
+                });
+                
+                // 手機版增加觸控反饋
+                if (isMobile) {
+                    room.addEventListener('touchstart', function() {
+                        this.style.transform = 'scale(0.98)';
+                    });
+                    
+                    room.addEventListener('touchend', function() {
+                        this.style.transform = 'scale(1)';
+                    });
+                }
+            });
+
+            // 按鈕點擊事件
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const text = this.textContent.trim();
+                    if (text.includes('戰績')) {
+                        alert('查看戰績功能\n顯示您的遊戲記錄');
+                    } else if (text.includes('排行榜')) {
+                        alert('排行榜功能\n查看高手排名');
+                    } else if (text.includes('活動')) {
+                        alert('活動中心\n查看最新優惠活動');
+                    } else if (text.includes('客服')) {
+                        alert('客服功能\n聯繫在線客服');
+                    } else if (text.includes('公告')) {
+                        alert('公告功能\n查看最新公告');
+                    } else if (text.includes('設定')) {
+                        alert('設定功能\n個人設定選項');
+                    }
+                });
+                
+                // 手機版觸控反饋
+                if (isMobile) {
+                    button.addEventListener('touchstart', function() {
+                        this.style.transform = 'scale(0.95)';
+                    });
+                    
+                    button.addEventListener('touchend', function() {
+                        this.style.transform = 'scale(1)';
+                    });
+                }
+            });
+
+            // 響應式調整
+            function handleResize() {
+                const width = window.innerWidth;
+                const body = document.body;
+                
+                if (width <= 768) {
+                    body.classList.add('mobile');
+                    body.classList.remove('tablet', 'desktop');
+                } else if (width <= 1024) {
+                    body.classList.add('tablet');
+                    body.classList.remove('mobile', 'desktop');
+                } else {
+                    body.classList.add('desktop');
+                    body.classList.remove('mobile', 'tablet');
+                }
+            }
+
+            // 初始化和監聽視窗大小變化
+            handleResize();
+            window.addEventListener('resize', handleResize);
+            
+            // 預防預設的觸控行為
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.closest('button') || e.target.closest('.game-room')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
+    </script>
+</body>
+</html>
